@@ -45,19 +45,58 @@ namespace EmployeeManagement.Api.Services
         // USER: SEE OWN LEAVES
         // =========================
         public async Task<Interfaces.PagedResult<LeaveListDto>> GetMyLeavesPagedAsync(
-    long userId, int page, int pageSize, string? search)
+           long userId, int page, int pageSize, LeaveFilterDto filter)
         {
             var query = _context.LeaveRequests
                 .Where(l => l.UserId == userId)
                 .AsQueryable();
 
-            // 🔍 SEARCH
-            if (!string.IsNullOrWhiteSpace(search))
+            // =========================
+            // 🔥 FLEXIBLE FILTERS
+            // =========================
+
+            // Year filter
+            // =========================
+            // 🔥 FLEXIBLE FILTERS
+            // =========================
+
+            // Year filter
+            // ✅ DATE FILTER (STRICT MONTH FIRST)
+            // =========================
+            // ✅ DATE FILTER (CORRECT)
+            // =========================
+            if (filter.Month.HasValue)
             {
-                search = search.Trim();
+                int month = filter.Month.Value;
+                int year = filter.Year ?? DateTime.Now.Year; // fallback if year not sent
+
                 query = query.Where(l =>
-                    l.LeaveType.Contains(search) ||
-                    l.Status.Contains(search));
+                    (l.FromDate.Year == year && l.FromDate.Month == month)
+                    ||
+                    (l.ToDate.Year == year && l.ToDate.Month == month)
+                );
+            }
+            else if (filter.Year.HasValue)
+            {
+                int year = filter.Year.Value;
+
+                query = query.Where(l =>
+                    l.FromDate.Year == year ||
+                    l.ToDate.Year == year
+                );
+            }
+
+
+            // Status filter
+            if (!string.IsNullOrWhiteSpace(filter.Status))
+            {
+                query = query.Where(l => l.Status == filter.Status);
+            }
+
+            // Leave type filter
+            if (!string.IsNullOrWhiteSpace(filter.LeaveType))
+            {
+                query = query.Where(l => l.LeaveType == filter.LeaveType);
             }
 
             var totalItems = await query.CountAsync();
@@ -86,23 +125,65 @@ namespace EmployeeManagement.Api.Services
                 Items = items
             };
         }
+
 
 
         // =========================
         // ADMIN / HR: SEE ALL
         // =========================
         public async Task<Interfaces.PagedResult<LeaveListDto>> GetAllLeavesPagedAsync(
-    int page, int pageSize, string? search)
+            int page, int pageSize, LeaveFilterDto filter)
         {
             var query = _context.LeaveRequests.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            // =========================
+            // 🔥 FLEXIBLE FILTERS
+            // =========================
+
+            // Year filter
+            // ✅ DATE FILTER (STRICT MONTH FIRST)
+            // =========================
+            // ✅ DATE FILTER (CORRECT)
+            // =========================
+            if (filter.Month.HasValue)
             {
-                search = search.Trim();
+                int month = filter.Month.Value;
+                int year = filter.Year ?? DateTime.Now.Year; // fallback if year not sent
+
                 query = query.Where(l =>
-                    l.LeaveType.Contains(search) ||
-                    l.UserName.Contains(search) ||
-                    l.Status.Contains(search));
+                    (l.FromDate.Year == year && l.FromDate.Month == month)
+                    ||
+                    (l.ToDate.Year == year && l.ToDate.Month == month)
+                );
+            }
+            else if (filter.Year.HasValue)
+            {
+                int year = filter.Year.Value;
+
+                query = query.Where(l =>
+                    l.FromDate.Year == year ||
+                    l.ToDate.Year == year
+                );
+            }
+
+
+
+            // Status filter
+            if (!string.IsNullOrWhiteSpace(filter.Status))
+            {
+                query = query.Where(l => l.Status == filter.Status);
+            }
+
+            // Leave type filter
+            if (!string.IsNullOrWhiteSpace(filter.LeaveType))
+            {
+                query = query.Where(l => l.LeaveType == filter.LeaveType);
+            }
+
+            // 🔥 HR-only: User name filter
+            if (!string.IsNullOrWhiteSpace(filter.UserName))
+            {
+                query = query.Where(l => l.UserName.Contains(filter.UserName));
             }
 
             var totalItems = await query.CountAsync();
@@ -131,6 +212,7 @@ namespace EmployeeManagement.Api.Services
                 Items = items
             };
         }
+
 
         // =========================
         // 🔥 GET LEAVE BY ID

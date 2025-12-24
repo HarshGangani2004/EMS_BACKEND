@@ -7,11 +7,11 @@ namespace EmployeeManagement.Api.Interfaces
         Task ApplyLeaveAsync(ApplyLeaveDto dto,string user);
 
         Task<PagedResult<LeaveListDto>> GetMyLeavesPagedAsync(
-        long userId, int page, int pageSize, string? search);
+        long userId, int page, int pageSize, LeaveFilterDto filter);
 
 
         Task<PagedResult<LeaveListDto>> GetAllLeavesPagedAsync(
-         int page, int pageSize, string? search);
+         int page, int pageSize, LeaveFilterDto filter);
 
         Task<LeaveListDto?> GetByIdAsync(long id);
         Task UpdateStatusAsync(long id, string status, string actionBy);

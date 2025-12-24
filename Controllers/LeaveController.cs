@@ -44,9 +44,10 @@ namespace EmployeeManagement.Api.Controllers
         [HttpGet("my")]
         [RequirePermission("leave.view")]
         public async Task<IActionResult> GetMyLeavesPaged(
+            [FromQuery] LeaveFilterDto? filter,
             int page = 1,
-            int pageSize = 10,
-            string? search = null)
+            int pageSize = 10
+        )
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
@@ -54,26 +55,32 @@ namespace EmployeeManagement.Api.Controllers
 
             long userId = long.Parse(userIdClaim);
 
+            filter ??= new LeaveFilterDto(); // ⭐ IMPORTANT
+
             var result = await _service.GetMyLeavesPagedAsync(
-                userId, page, pageSize, search);
+                userId, page, pageSize, filter);
 
             return Ok(result);
         }
+
         // =========================
         // ADMIN / HR: SEE ALL LEAVES
         // =========================
         [HttpGet("all")]
         [RequirePermission("leave.view.all")]
         public async Task<IActionResult> GetAllLeavesPaged(
+                [FromQuery] LeaveFilterDto? filter,
                 int page = 1,
-                int pageSize = 10,
-                string? search = null)
+                int pageSize = 10)
         {
+            filter ??= new LeaveFilterDto(); // ⭐ IMPORTANT
+
             var result = await _service.GetAllLeavesPagedAsync(
-                page, pageSize, search);
+                page, pageSize, filter);
 
             return Ok(result);
         }
+
 
         // =========================
         // 🔥 GET LEAVE BY ID (VIEW)
