@@ -20,6 +20,7 @@ namespace EmployeeManagement.Api.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<TaskItem> Tasks { get; set; }
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
+        public DbSet<DailyTaskLog> DailyTaskLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

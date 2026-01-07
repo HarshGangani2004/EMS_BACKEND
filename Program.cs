@@ -91,7 +91,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ILeaveService, LeaveService>();
-
+builder.Services.AddScoped<IDailyTaskLogService, DailyTaskLogService>();
 // ------------------------------
 // MVC
 // ------------------------------
@@ -200,8 +200,8 @@ async Task CreateDefaultAdmin(WebApplication app)
         "project.view","project.create","project.edit","project.delete",
         "task.view","task.create","task.edit","task.delete","salary",
         "leave.create","leave.view","leave.view.all","leave.update.status",
-        "leave.delete","leave.update"
-
+        "leave.delete","leave.update","timesheet.view","timesheet.create",
+        "timesheet.update","timesheet.delete","timesheet.view.all"
     };
 
 
