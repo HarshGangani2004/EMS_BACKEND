@@ -101,6 +101,13 @@ namespace EmployeeManagement.Api.Services
 
             var totalItems = await query.CountAsync();
 
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // 🔥 IMPORTANT SAFETY
+            if (totalPages == 0)
+            {
+                totalPages = 1;
+            }
             var items = await query
                 .OrderByDescending(l => l.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -121,7 +128,7 @@ namespace EmployeeManagement.Api.Services
                 Page = page,
                 PageSize = pageSize,
                 TotalItems = totalItems,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                TotalPages = totalPages,
                 Items = items
             };
         }
@@ -188,6 +195,8 @@ namespace EmployeeManagement.Api.Services
 
             var totalItems = await query.CountAsync();
 
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
             var items = await query
                 .OrderByDescending(l => l.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -208,7 +217,7 @@ namespace EmployeeManagement.Api.Services
                 Page = page,
                 PageSize = pageSize,
                 TotalItems = totalItems,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                TotalPages = totalPages,
                 Items = items
             };
         }

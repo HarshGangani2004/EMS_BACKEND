@@ -140,12 +140,15 @@ namespace EmployeeManagement.Api.Services
                     Status = x.Status
                 })
                 .ToListAsync();
+            var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+            if (totalPages == 0) totalPages = 1; // 🔥 IMPORTANT
 
             return new Interfaces.PagedResult<DailyTaskLogListDto>
             {
                 Page = page,
                 PageSize = pageSize,
                 TotalItems = total,
+                TotalPages = totalPages,
                 Items = items
             };
         }
